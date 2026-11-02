@@ -1,0 +1,75 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // OpenCode 1.x uses the key "plugin". On OpenCode 2.x the key is "plugins".
+  "plugin": [
+    "superpowers@git+https://github.com/obra/superpowers.git#v7.0.0",
+    "@dietrichgebert/ponytail@5.3.2"
+  ],
+
+  // Spec and plan in "design". Implement in "build": opencode --agent build (inside a worktree).
+  "default_agent": "design",
+
+  "permission": {
+    // Last matching rule wins: catch-all first, exceptions after.
+    "bash": {
+      "*": "ask",
+      "ls *": "allow",
+      "pwd": "allow",
+      "head *": "allow",
+      "wc *": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git rev-parse*": "allow",
+      "git check-ignore*": "allow",
+      "git worktree list*": "allow",
+      "git worktree add .worktrees/*": "allow",
+      "git add *": "allow",
+      "git commit *": "allow",
+      "git push *": "deny",
+      "npm ci": "allow",
+      "npm run lint*": "allow",
+      "npm run typecheck*": "allow",
+      "npm test*": "allow",
+      "npm run shots*": "allow",
+      "npm run test:visual*": "allow",
+      "npm run test:visual:update*": "deny",
+      "npm run build*": "allow",
+      "rm *": "deny"
+    },
+    "edit": {
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "package-lock.json": "deny"
+    },
+    // Optional: hide two skills you will rarely need, so the model is not tempted to load them.
+    "skill": {
+      "writing-skills": "deny",
+      "diagnosing-superpowers": "deny"
+    }
+  },
+
+  "agent": {
+    // The built-in Plan agent injects "you MUST NOT make any edits ... supersedes any other
+    // instructions". That blocks Superpowers from writing and committing the spec and the plan.
+    "plan": { "disable": true },
+
+    "design": {
+      "mode": "primary",
+      "description": "Brainstorm, write the spec and the plan. Writes only docs/superpowers, docs/design and .superpowers. Never source code.",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "docs/superpowers/*": "allow",
+          "docs/design/*": "allow",
+          ".superpowers/*": "allow"
+        },
+        // A subagent does NOT inherit the edit fence above (verified), so every dispatch asks first.
+        "task": { "*": "ask" }
+      }
+    }
+  }
+}
