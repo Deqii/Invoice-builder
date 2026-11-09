@@ -1,0 +1,174 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+    format("woff2");
+}
+
+@theme {
+  /* colours */
+  --color-page: #f5f5f4;
+  --color-paper: #ffffff;
+  --color-ink: #0f172a;
+  --color-ink-muted: #475569;
+  --color-ink-faint: #94a3b8;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
+  --color-brand: #0f766e;
+  --color-on-brand: #ffffff;
+  --color-sent-bg: #dbeafe;
+  --color-sent-ink: #1d4ed8;
+  --color-draft-bg: #f1f5f9;
+  --color-draft-ink: #475569;
+  --color-paid-bg: #dcfce7;
+  --color-paid-ink: #15803d;
+  --color-overdue-bg: #fee2e2;
+  --color-overdue-ink: #b91c1c;
+  --color-danger: #b91c1c;
+  --color-muted-bg: #f8fafc;
+  --color-ring: #0f766e;
+  --color-overlay: rgb(15 23 42 / 0.5);
+
+  /* type */
+  --text-label: 12px;
+  --text-label--line-height: 16px;
+  --text-label--font-weight: 600;
+  --text-label--letter-spacing: 0.06em;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-caption--font-weight: 500;
+  --text-caption--letter-spacing: 0em;
+  --text-meta: 13px;
+  --text-meta--line-height: 20px;
+  --text-meta--font-weight: 400;
+  --text-meta--letter-spacing: 0em;
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-body--font-weight: 400;
+  --text-body--letter-spacing: 0em;
+  --text-body-medium: 14px;
+  --text-body-medium--line-height: 20px;
+  --text-body-medium--font-weight: 500;
+  --text-body-medium--letter-spacing: 0em;
+  --text-body-strong: 14px;
+  --text-body-strong--line-height: 20px;
+  --text-body-strong--font-weight: 600;
+  --text-body-strong--letter-spacing: 0em;
+  --text-app-name: 16px;
+  --text-app-name--line-height: 24px;
+  --text-app-name--font-weight: 600;
+  --text-app-name--letter-spacing: 0em;
+  --text-card-amount: 16px;
+  --text-card-amount--line-height: 24px;
+  --text-card-amount--font-weight: 600;
+  --text-card-amount--letter-spacing: 0em;
+  --text-dialog-title: 18px;
+  --text-dialog-title--line-height: 28px;
+  --text-dialog-title--font-weight: 600;
+  --text-dialog-title--letter-spacing: -0.01em;
+  --text-page-title: 24px;
+  --text-page-title--line-height: 32px;
+  --text-page-title--font-weight: 600;
+  --text-page-title--letter-spacing: -0.01em;
+  --text-total: 24px;
+  --text-total--line-height: 32px;
+  --text-total--font-weight: 700;
+  --text-total--letter-spacing: -0.01em;
+  --text-doc-title: 30px;
+  --text-doc-title--line-height: 36px;
+  --text-doc-title--font-weight: 700;
+  --text-doc-title--letter-spacing: -0.02em;
+
+  /* radius */
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* shadows */
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow-paper: 0 1px 2px rgb(15 23 42 / 0.06),
+    0 12px 32px rgb(15 23 42 / 0.08);
+  --shadow-pop: 0 4px 6px -1px rgb(15 23 42 / 0.1),
+    0 10px 24px rgb(15 23 42 / 0.12);
+
+  /* layout widths */
+  --container-preview: 794px;
+  --container-editor: 842px;
+  --container-list: 1008px;
+  --container-dialog: 480px;
+  --container-menu: 176px;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --breakpoint-sm: 641px;
+}
+
+:root {
+  --background: var(--color-page);
+  --foreground: var(--color-ink);
+  --card: var(--color-paper);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-paper);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-brand);
+  --primary-foreground: var(--color-on-brand);
+  --secondary: var(--color-muted-bg);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-page);
+  --muted-foreground: var(--color-ink-muted);
+  --accent: var(--color-muted-bg);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-danger);
+  --destructive-foreground: var(--color-on-brand);
+  --border: var(--color-line);
+  --input: var(--color-line-strong);
+  --ring: var(--color-ring);
+  --radius: var(--radius-lg);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* Generated for the fixed layout widths used by later screens. */
+@source inline("max-w-preview max-w-editor max-w-list max-w-dialog w-menu");
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
