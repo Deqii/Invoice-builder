@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invoice list (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+/*
+  Behavior this mockup documents:
+  - Newest first (by invoice number). No search, no filter.
+  - A row opens the invoice preview. The "..." menu holds the other actions.
+  - Menu items depend on status:
+      draft          Edit, Duplicate, Mark as sent, Delete
+      sent, overdue  Edit, Duplicate, Mark as paid, Delete
+      paid           Edit, Duplicate, Delete
+  - "Overdue" is not stored. It shows when status is sent and the due date has passed.
+  - The client column shows the first line of the free-text "Billed to".
+  - The menu is drawn open on the second row (status sent).
+  - Not mocked: empty state, delete confirmation.
+*/
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); }
+h1 + .count { margin-top: 2px; }
+.list { width: 100%; border-collapse: collapse; }
+.list th { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line-strong); }
+.list td { padding: 16px; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.list tr:last-child td { border-bottom: 0; }
+.list .r { text-align: right; }
+.list th:nth-child(1) { width: 144px; }
+.list th:nth-child(3), .list th:nth-child(4) { width: 132px; }
+.list th:nth-child(5) { width: 112px; }
+.list th:nth-child(6) { width: 128px; }
+.list th:nth-child(7) { width: 56px; }
+.list .no { font-weight: 500; }
+.list .amount { font-weight: 500; }
+.list tr.open td { background: var(--muted-bg); }
+.rowmenu { position: relative; text-align: right; }
+.menu { position: absolute; z-index: 5; right: 12px; top: 44px; width: 176px; text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-pop); padding: 4px; }
+.menu button { display: block; width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: var(--radius-md); cursor: pointer; }
+.menu button.hl { background: var(--page); }
+.menu button.danger { color: var(--danger); }
+.menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px -4px; }
+
+.cards { display: none; }
+.icard { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); padding: 16px; }
+.icard + .icard { margin-top: 12px; }
+.icard .top { display: flex; align-items: center; gap: 8px; }
+.icard .top .icon-btn { margin: -6px -8px -6px auto; }
+.icard .no { font-weight: 500; }
+.icard .client { margin-top: 4px; }
+.icard .bottom { display: flex; align-items: baseline; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.icard .amount { font-size: 16px; line-height: 24px; font-weight: 600; }
+
+@media (max-width: 640px) {
+  .actions .btn { width: 100%; }
+  .actions { display: grid; }
+  .card { display: none; }
+  .cards { display: block; }
+}
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="brand"><span class="mark">I</span>Invoice Builder</div>
+  <nav class="nav" aria-label="Main">
+    <a href="#" aria-current="page">Invoices</a><a href="#">Clients</a><a href="#">Settings</a>
+  </nav>
+  <button class="avatar" aria-label="Seller profile">RS</button>
+</header>
+
+<main class="wrap wide">
+  <div class="toolbar">
+    <div>
+      <h1>Invoices</h1>
+      <p class="muted count">5 invoices</p>
+    </div>
+    <div class="actions">
+      <button class="btn primary"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>New invoice</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="list">
+      <thead>
+        <tr><th>Invoice</th><th>Client</th><th>Issued</th><th>Due</th><th>Status</th><th class="r">Amount</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="no num">INV-2026-015</td><td>Meridian Cafe</td><td class="muted num">Oct 26, 2026</td><td class="muted num">Nov 9, 2026</td>
+          <td><span class="badge draft">Draft</span></td><td class="r amount num">$480.00</td>
+          <td class="rowmenu"><button class="icon-btn" aria-label="Actions for INV-2026-015"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></td>
+        </tr>
+        <tr class="open">
+          <td class="no num">INV-2026-014</td><td>Northwind Labs</td><td class="muted num">Oct 20, 2026</td><td class="muted num">Nov 3, 2026</td>
+          <td><span class="badge sent">Sent</span></td><td class="r amount num">$2,673.00</td>
+          <td class="rowmenu">
+            <button class="icon-btn" aria-label="Actions for INV-2026-014" aria-expanded="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button>
+            <div class="menu" role="menu">
+              <button role="menuitem">Edit</button>
+              <button role="menuitem">Duplicate</button>
+              <button role="menuitem" class="hl">Mark as paid</button>
+              <hr>
+              <button role="menuitem" class="danger">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="no num">INV-2026-013</td><td>Atlas Ventures</td><td class="muted num">Oct 1, 2026</td><td class="muted num">Oct 15, 2026</td>
+          <td><span class="badge paid">Paid</span></td><td class="r amount num">$1,350.00</td>
+          <td class="rowmenu"><button class="icon-btn" aria-label="Actions for INV-2026-013"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></td>
+        </tr>
+        <tr>
+          <td class="no num">INV-2026-012</td><td>Birch &amp; Co</td><td class="muted num">Sep 15, 2026</td><td class="muted num">Sep 29, 2026</td>
+          <td><span class="badge overdue">Overdue</span></td><td class="r amount num">$925.50</td>
+          <td class="rowmenu"><button class="icon-btn" aria-label="Actions for INV-2026-012"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></td>
+        </tr>
+        <tr>
+          <td class="no num">INV-2026-011</td><td>Northwind Labs</td><td class="muted num">Sep 2, 2026</td><td class="muted num">Sep 16, 2026</td>
+          <td><span class="badge paid">Paid</span></td><td class="r amount num">$1,980.00</td>
+          <td class="rowmenu"><button class="icon-btn" aria-label="Actions for INV-2026-011"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cards">
+    <article class="icard">
+      <div class="top"><span class="no num">INV-2026-015</span><span class="badge draft">Draft</span>
+        <button class="icon-btn" aria-label="Actions for INV-2026-015"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></div>
+      <p class="client">Meridian Cafe</p>
+      <div class="bottom"><span class="muted num">Due Nov 9, 2026</span><span class="amount num">$480.00</span></div>
+    </article>
+    <article class="icard">
+      <div class="top"><span class="no num">INV-2026-014</span><span class="badge sent">Sent</span>
+        <button class="icon-btn" aria-label="Actions for INV-2026-014"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></div>
+      <p class="client">Northwind Labs</p>
+      <div class="bottom"><span class="muted num">Due Nov 3, 2026</span><span class="amount num">$2,673.00</span></div>
+    </article>
+    <article class="icard">
+      <div class="top"><span class="no num">INV-2026-013</span><span class="badge paid">Paid</span>
+        <button class="icon-btn" aria-label="Actions for INV-2026-013"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></div>
+      <p class="client">Atlas Ventures</p>
+      <div class="bottom"><span class="muted num">Due Oct 15, 2026</span><span class="amount num">$1,350.00</span></div>
+    </article>
+    <article class="icard">
+      <div class="top"><span class="no num">INV-2026-012</span><span class="badge overdue">Overdue</span>
+        <button class="icon-btn" aria-label="Actions for INV-2026-012"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></div>
+      <p class="client">Birch &amp; Co</p>
+      <div class="bottom"><span class="muted num">Due Sep 29, 2026</span><span class="amount num">$925.50</span></div>
+    </article>
+    <article class="icard">
+      <div class="top"><span class="no num">INV-2026-011</span><span class="badge paid">Paid</span>
+        <button class="icon-btn" aria-label="Actions for INV-2026-011"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/></svg></button></div>
+      <p class="client">Northwind Labs</p>
+      <div class="bottom"><span class="muted num">Due Sep 16, 2026</span><span class="amount num">$1,980.00</span></div>
+    </article>
+  </div>
+</main>
+</body>
+</html>

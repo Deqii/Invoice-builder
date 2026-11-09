@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seller profile dialog (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+/*
+  Behavior this mockup documents:
+  - The avatar in the header opens this dialog. "Edit profile" in the editor opens it too.
+  - Fields are saved in this browser only (localStorage) and used on every invoice.
+  - The logo is not uploaded. It shows the initials of the business name (first letter of the
+    first two words).
+  - The page behind is the invoice list, dimmed. The dialog fits the viewport (1440x900, 390x844).
+  - Not mocked: validation errors, first-run state (required before the first invoice).
+*/
+html, body { height: 100%; overflow: hidden; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); }
+.count { margin-top: 2px; }
+.list { width: 100%; border-collapse: collapse; }
+.list th { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line-strong); }
+.list td { padding: 16px; border-bottom: 1px solid var(--line); }
+.list .r { text-align: right; }
+.list .no { font-weight: 500; }
+
+.overlay { position: fixed; inset: 0; background: var(--overlay); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.dialog { width: 480px; max-width: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow-pop); padding: 24px; }
+.dhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+h2.dtitle { font-size: 18px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; text-transform: none; color: var(--ink); margin: 0; }
+.dhead .icon-btn { margin: -4px -8px 0 0; }
+.dbody { display: grid; gap: 16px; margin-top: 20px; }
+.logorow { display: flex; align-items: center; gap: 12px; }
+.dfoot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+
+@media (max-width: 640px) {
+  .card { display: none; }
+  .actions .btn { width: 100%; }
+  .actions { display: grid; }
+  .dialog { padding: 20px; }
+  .dfoot { display: grid; justify-content: stretch; }
+  .dfoot .primary { order: -1; }
+}
+.mobile-bg { display: none; }
+@media (max-width: 640px) { .mobile-bg { display: block; } }
+.mobile-bg .icard { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 16px; }
+.mobile-bg .icard + .icard { margin-top: 12px; }
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="brand"><span class="mark">I</span>Invoice Builder</div>
+  <nav class="nav" aria-label="Main">
+    <a href="#" aria-current="page">Invoices</a><a href="#">Clients</a><a href="#">Settings</a>
+  </nav>
+  <button class="avatar" aria-label="Seller profile">RS</button>
+</header>
+
+<main class="wrap wide" aria-hidden="true">
+  <div class="toolbar">
+    <div>
+      <h1>Invoices</h1>
+      <p class="muted count">5 invoices</p>
+    </div>
+    <div class="actions"><button class="btn primary">New invoice</button></div>
+  </div>
+  <div class="card">
+    <table class="list">
+      <thead><tr><th>Invoice</th><th>Client</th><th>Issued</th><th>Due</th><th>Status</th><th class="r">Amount</th></tr></thead>
+      <tbody>
+        <tr><td class="no num">INV-2026-015</td><td>Meridian Cafe</td><td class="muted num">Oct 26, 2026</td><td class="muted num">Nov 9, 2026</td><td><span class="badge draft">Draft</span></td><td class="r num">$480.00</td></tr>
+        <tr><td class="no num">INV-2026-014</td><td>Northwind Labs</td><td class="muted num">Oct 20, 2026</td><td class="muted num">Nov 3, 2026</td><td><span class="badge sent">Sent</span></td><td class="r num">$2,673.00</td></tr>
+        <tr><td class="no num">INV-2026-013</td><td>Atlas Ventures</td><td class="muted num">Oct 1, 2026</td><td class="muted num">Oct 15, 2026</td><td><span class="badge paid">Paid</span></td><td class="r num">$1,350.00</td></tr>
+        <tr><td class="no num">INV-2026-012</td><td>Birch &amp; Co</td><td class="muted num">Sep 15, 2026</td><td class="muted num">Sep 29, 2026</td><td><span class="badge overdue">Overdue</span></td><td class="r num">$925.50</td></tr>
+        <tr><td class="no num">INV-2026-011</td><td>Northwind Labs</td><td class="muted num">Sep 2, 2026</td><td class="muted num">Sep 16, 2026</td><td><span class="badge paid">Paid</span></td><td class="r num">$1,980.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mobile-bg">
+    <article class="icard"><span class="num strong">INV-2026-015</span> <span class="badge draft">Draft</span><p>Meridian Cafe</p></article>
+    <article class="icard"><span class="num strong">INV-2026-014</span> <span class="badge sent">Sent</span><p>Northwind Labs</p></article>
+    <article class="icard"><span class="num strong">INV-2026-013</span> <span class="badge paid">Paid</span><p>Atlas Ventures</p></article>
+  </div>
+</main>
+
+<div class="overlay">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dt">
+    <div class="dhead">
+      <div>
+        <h2 id="dt" class="dtitle">Seller profile</h2>
+        <p class="muted">Shown on every invoice. Saved in this browser only.</p>
+      </div>
+      <button class="icon-btn" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+    </div>
+    <form class="dbody" onsubmit="return false">
+      <div class="field">
+        <label for="biz">Business name</label>
+        <input id="biz" class="input" value="Rama Studio">
+      </div>
+      <div class="field">
+        <label for="mail">Email</label>
+        <input id="mail" class="input" value="hello@ramastudio.example">
+      </div>
+      <div class="field">
+        <label for="addr">Address</label>
+        <textarea id="addr" class="textarea" rows="3">Bandung, Indonesia</textarea>
+      </div>
+      <div class="logorow">
+        <span class="logo">RS</span>
+        <p class="muted">The logo shows the initials of your business name.</p>
+      </div>
+    </form>
+    <div class="dfoot">
+      <button class="btn" type="button">Cancel</button>
+      <button class="btn primary" type="button">Save profile</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
