@@ -70,6 +70,15 @@ describe('money engine', () => {
 
   it('parses exact input and rejects invalid values', () => {
     expect(parseMoneyInput('1,200.00')).toBe(120000)
+    expect(parseMoneyInput('1,000')).toBe(100000)
+    expect(parseMoneyInput('1,000.5')).toBe(100050)
+    expect(parseMoneyInput('999,999,999.99')).toBe(99999999999)
+    expect(parseMoneyInput('12,50')).toBeNull()
+    expect(parseMoneyInput('1,50')).toBeNull()
+    expect(parseMoneyInput('1,2,3')).toBeNull()
+    expect(parseMoneyInput(',5')).toBeNull()
+    expect(parseMoneyInput('1000,000')).toBeNull()
+    expect(parseMoneyInput('0,500')).toBeNull()
     expect(parseMoneyInput('45')).toBe(4500)
     expect(parseMoneyInput('0.05')).toBe(5)
     expect(parseMoneyInput('1.234')).toBeNull()
