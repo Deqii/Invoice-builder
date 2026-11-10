@@ -237,6 +237,9 @@ export async function updateInvoice(invoice: Invoice): Promise<Invoice> {
     const raw = localStorage.getItem(key)
     if (raw === null) throw new StorageFailure('invalid', 'The invoice does not exist.')
     const stored = parseStoredInvoice(raw)
+    if (invoice.number !== stored.number) {
+      throw new StorageFailure('invalid', 'The invoice number cannot change.')
+    }
     const updated: Invoice = {
       ...invoice,
       id: stored.id,
