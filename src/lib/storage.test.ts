@@ -150,7 +150,6 @@ describe('updateInvoice', () => {
 
     const updated = await updateInvoice({
       ...created,
-      number: 'INV-2026-999',
       billedTo: 'New Client',
     })
 
@@ -161,6 +160,15 @@ describe('updateInvoice', () => {
     expect(updated.billedTo).toBe('New Client')
     expect(getInvoice(created.id)).toEqual(updated)
     expect(readCounter()).toEqual({ '2026': 1 })
+  })
+
+  it('rejects a changed number and writes nothing', async () => {
+    const created = await createInvoice(draft())
+
+    await expect(
+      updateInvoice({ ...created, number: 'INV-2026-999' }),
+    ).rejects.toMatchObject({ code: 'invalid' })
+    expect(getInvoice(created.id)).toEqual(created)
   })
 
   it('rejects an invalid object and leaves the stored invoice unchanged', async () => {
@@ -216,6 +224,98 @@ describe('deleteInvoice', () => {
     expect(getInvoice(first.id)).not.toBeNull()
     const third = await createInvoice(draft())
     expect(third.number).toBe('INV-2026-003')
+  })
+})
+
+describe('invoice write lock', () => {
+  let calls: Array<{ name: string; options: unknown }> = []
+  let callbackInvocations = 0
+  let request: ReturnType<typeof vi.fn> = vi.fn()
+
+  beforeEach(() => {
+    calls = []
+    callbackInvocations = 0
+    request = vi.fn((name: string, options: unknown, callback: () => unknown) => {
+      calls.push({ name, options })
+      return Promise.resolve().then(() => {
+        callbackInvocations += 1
+        return callback()
+      })
+    })
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } })
+  })
+
+  const expectLockRequest = () => {
+    expect(request).toHaveBeenCalledTimes(1)
+    expect(calls).toEqual([
+      { name: 'invoice-builder:invoice-write', options: { mode: 'exclusive' } },
+    ])
+    expect(callbackInvocations).toBe(1)
+  }
+
+  it('uses the invoice-write lock once for createInvoice', async () => {
+    await createInvoice(draft())
+    expectLockRequest()
+  })
+
+  it('uses the invoice-write lock once for updateInvoice', async () => {
+    seedInvoice(makeInvoice({ id: 'seed-1' }))
+    await updateInvoice(makeInvoice({ id: 'seed-1' }))
+    expectLockRequest()
+  })
+
+  it('uses the invoice-write lock once for setInvoiceStatus', async () => {
+    seedInvoice(makeInvoice({ id: 'seed-1' }))
+    await setInvoiceStatus('seed-1', 'sent')
+    expectLockRequest()
+  })
+
+  it('uses the invoice-write lock once for deleteInvoice', async () => {
+    seedInvoice(makeInvoice({ id: 'seed-1' }))
+    await deleteInvoice('seed-1')
+    expectLockRequest()
+  })
+})
+
+describe('localStorage write failures', () => {
+  it('rejects with write when the invoice key cannot be saved and leaves the counter unchanged', async () => {
+    const originalSetItem = Storage.prototype.setItem
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (
+      this: Storage,
+      key: string,
+      value: string,
+    ) {
+      if (key.startsWith(STORAGE_KEYS.invoicePrefix)) throw new Error('quota')
+      return originalSetItem.call(this, key, value)
+    })
+
+    await expect(createInvoice(draft())).rejects.toMatchObject({ code: 'write' })
+    expect(localStorage.getItem(STORAGE_KEYS.counters)).toBeNull()
+  })
+
+  it('keeps the saved invoice and recovers the number when the counter write fails', async () => {
+    const originalSetItem = Storage.prototype.setItem
+    let counterWriteFailed = false
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (
+      this: Storage,
+      key: string,
+      value: string,
+    ) {
+      if (key === STORAGE_KEYS.counters && !counterWriteFailed) {
+        counterWriteFailed = true
+        throw new Error('quota')
+      }
+      return originalSetItem.call(this, key, value)
+    })
+
+    const first = await createInvoice(draft())
+    expect(first.number).toBe('INV-2026-001')
+    expect(getInvoice(first.id)).not.toBeNull()
+    expect(localStorage.getItem(STORAGE_KEYS.counters)).toBeNull()
+
+    vi.restoreAllMocks()
+    const second = await createInvoice(draft())
+    expect(second.number).toBe('INV-2026-002')
   })
 })
 
