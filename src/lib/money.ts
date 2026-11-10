@@ -60,8 +60,9 @@ export function formatQty(hundredths: number): string {
 }
 
 function parseTwoDecimals(value: string): number | null {
-  const cleaned = value.trim().replace(/,/g, '')
-  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return null
+  const trimmed = value.trim()
+  if (!/^([1-9]\d{0,2}(,\d{3})+|\d+)(\.\d{1,2})?$/.test(trimmed)) return null
+  const cleaned = trimmed.replace(/,/g, '')
   const [whole, fraction = ''] = cleaned.split('.')
   return Number(whole) * 100 + Number(fraction.padEnd(2, '0'))
 }
