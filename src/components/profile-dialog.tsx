@@ -21,7 +21,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { validateProfile } from '@/lib/profile'
-import { StorageFailure, writeProfile } from '@/lib/storage'
+import { writeProfile } from '@/lib/storage'
 import type { SellerProfile } from '@/lib/types'
 
 export interface ProfileDialogProps {
@@ -114,9 +114,9 @@ function ProfileForm({
 
     try {
       writeProfile(trimmed)
-    } catch (failure) {
+    } catch {
       setFormError(
-        failure instanceof StorageFailure ? failure.message : 'Could not save the profile.',
+        'Could not save to this browser. Your changes are still here. Please try again.',
       )
       return
     }
