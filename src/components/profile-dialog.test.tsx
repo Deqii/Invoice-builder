@@ -185,7 +185,24 @@ describe('ProfileDialog', () => {
     expect(screen.getByLabelText('Address')).toHaveValue('Bandung, Indonesia')
   })
 
-  it('stays open and shows the storage error when writing fails', async () => {
+  it('focuses the first invalid field in section 15 order', async () => {
+    const user = userEvent.setup()
+    render(<Harness profile={null} />)
+    await openDialog(user)
+
+    await user.click(screen.getByRole('button', { name: 'Save profile' }))
+    expect(screen.getByLabelText('Business name')).toHaveFocus()
+
+    await user.type(screen.getByLabelText('Business name'), 'Rama Studio')
+    await user.click(screen.getByRole('button', { name: 'Save profile' }))
+    expect(screen.getByLabelText('Email')).toHaveFocus()
+
+    await user.type(screen.getByLabelText('Email'), 'hello@ramastudio.example')
+    await user.click(screen.getByRole('button', { name: 'Save profile' }))
+    expect(screen.getByLabelText('Address')).toHaveFocus()
+  })
+
+  it('stays open and shows the section 15 storage error when writing fails', async () => {
     const user = userEvent.setup()
     const onSaved = vi.fn()
     writeProfileMock.mockImplementation(() => {
@@ -194,9 +211,14 @@ describe('ProfileDialog', () => {
     render(<Harness profile={seededProfile} onSaved={onSaved} />)
     await openDialog(user)
 
+    await user.clear(screen.getByLabelText('Business name'))
+    await user.type(screen.getByLabelText('Business name'), 'Nusa Creative')
     await user.click(screen.getByRole('button', { name: 'Save profile' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Could not save the profile.')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Could not save to this browser. Your changes are still here. Please try again.',
+    )
+    expect(screen.getByLabelText('Business name')).toHaveValue('Nusa Creative')
     expect(screen.getByRole('heading', { name: 'Seller profile' })).toBeInTheDocument()
     expect(onSaved).not.toHaveBeenCalled()
   })

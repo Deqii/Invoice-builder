@@ -28,6 +28,10 @@ describe('initials', () => {
     expect(initials('(PT) Maju')).toBe('PM')
   })
 
+  it('falls back to IB when every word is only symbols', () => {
+    expect(initials('& @ #')).toBe('IB')
+  })
+
   it('caps the result at two characters', () => {
     expect(Array.from(initials('ßeta Labs'))).toHaveLength(2)
   })
