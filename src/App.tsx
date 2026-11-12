@@ -1,68 +1,66 @@
-import { useState } from 'react'
-import { ProfileDialog } from '@/components/profile-dialog'
-import { SellerAvatar } from '@/components/seller-avatar'
-import { Button } from '@/components/ui/button'
-import { useSellerProfile } from '@/hooks/use-seller-profile'
+import { AppShell } from '@/components/app-shell'
+import { InvoiceList } from '@/routes/invoice-list'
+import { NotFound } from '@/routes/not-found'
+import { Link, matchRoute, usePathname, type Route } from '@/lib/router'
+
+function RoutePlaceholder({
+  title,
+  testId,
+  note,
+}: {
+  title: string
+  testId: string
+  note: string
+}) {
+  return (
+    <main className="mx-auto w-full max-w-editor px-4 pt-5 pb-10 sm:px-6 sm:pt-8 sm:pb-16">
+      <Link href="/" className="text-meta text-ink-muted hover:text-ink">
+        ← Back to invoices
+      </Link>
+      <h1 data-testid={testId} className="mt-1 text-page-title">
+        {title}
+      </h1>
+      <p className="mt-2 text-body text-ink-muted">{note}</p>
+    </main>
+  )
+}
+
+function renderRoute(route: Route) {
+  switch (route.name) {
+    case 'list':
+      return <InvoiceList />
+    case 'new':
+      return (
+        <RoutePlaceholder
+          title="New invoice"
+          testId="route-new"
+          note="TODO: Task 7 replaces this placeholder with the invoice editor."
+        />
+      )
+    case 'edit':
+      return (
+        <RoutePlaceholder
+          title="Edit invoice"
+          testId="route-edit"
+          note="TODO: Task 7 replaces this placeholder with the invoice editor."
+        />
+      )
+    case 'preview':
+      return (
+        <RoutePlaceholder
+          title="Invoice preview"
+          testId="route-preview"
+          note="TODO: Task 8 replaces this placeholder with the invoice preview."
+        />
+      )
+    case 'unknown':
+      return <NotFound />
+  }
+}
 
 function App() {
-  const { profile, reload } = useSellerProfile()
-  const [profileOpen, setProfileOpen] = useState(false)
-
-  return (
-    <div className="min-h-screen bg-page text-ink">
-      <header className="grid h-16 grid-cols-3 items-center border-b border-line bg-paper px-4 sm:px-8">
-        <div className="flex items-center gap-2">
-          <span className="grid size-7 place-items-center rounded-md bg-brand text-body-strong text-on-brand">
-            I
-          </span>
-          <span className="text-app-name">Invoice Builder</span>
-        </div>
-
-        <nav aria-label="Main" className="hidden justify-center gap-1 sm:flex">
-          <span
-            aria-current="page"
-            className="rounded-lg bg-page px-3 py-2 text-body-medium text-ink"
-          >
-            Invoices
-          </span>
-          <span
-            aria-disabled="true"
-            className="px-3 py-2 text-body-medium text-ink-muted"
-          >
-            Clients
-          </span>
-          <span
-            aria-disabled="true"
-            className="px-3 py-2 text-body-medium text-ink-muted"
-          >
-            Settings
-          </span>
-        </nav>
-
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label="Seller profile"
-            className="rounded-full p-0"
-            onClick={() => setProfileOpen(true)}
-          >
-            <SellerAvatar businessName={profile?.businessName ?? ''} />
-          </Button>
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-list px-4 pb-10 pt-5 sm:px-6 sm:pb-16 sm:pt-8" />
-
-      <ProfileDialog
-        open={profileOpen}
-        onOpenChange={setProfileOpen}
-        profile={profile}
-        onSaved={reload}
-      />
-    </div>
-  )
+  const pathname = usePathname()
+  return <AppShell>{renderRoute(matchRoute(pathname))}</AppShell>
 }
 
 export default App
