@@ -1,4 +1,4 @@
-import { render, renderHook, screen, waitFor } from '@testing-library/react'
+import { act, render, renderHook, screen, waitFor } from '@testing-library/react'
 import { createEvent, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Link } from '@/components/link'
@@ -55,7 +55,7 @@ describe('navigate and usePathname', () => {
     const { result } = renderHook(() => usePathname())
     const push = vi.spyOn(window.history, 'pushState')
 
-    navigate('/invoices/abc')
+    act(() => navigate('/invoices/abc'))
 
     expect(push).toHaveBeenCalledTimes(1)
     await waitFor(() => expect(result.current).toBe('/invoices/abc'))
@@ -83,14 +83,14 @@ describe('navigate and usePathname', () => {
   it('restores each screen on browser back and forward', async () => {
     const { result } = renderHook(() => usePathname())
 
-    navigate('/invoices/abc')
-    navigate('/invoices/abc/edit')
+    act(() => navigate('/invoices/abc'))
+    act(() => navigate('/invoices/abc/edit'))
     await waitFor(() => expect(result.current).toBe('/invoices/abc/edit'))
 
-    window.history.back()
+    await act(async () => window.history.back())
     await waitFor(() => expect(result.current).toBe('/invoices/abc'))
 
-    window.history.forward()
+    await act(async () => window.history.forward())
     await waitFor(() => expect(result.current).toBe('/invoices/abc/edit'))
   })
 })
@@ -117,6 +117,23 @@ describe('goBack', () => {
 })
 
 describe('Link', () => {
+  const cleanups: Array<() => void> = []
+
+  afterEach(() => {
+    for (const cleanup of cleanups.splice(0)) cleanup()
+  })
+
+  function trackClickDefault() {
+    let prevented = true
+    const listener = (event: MouseEvent) => {
+      prevented = event.defaultPrevented
+      event.preventDefault()
+    }
+    document.addEventListener('click', listener)
+    cleanups.push(() => document.removeEventListener('click', listener))
+    return () => prevented
+  }
+
   function renderLink(props: Record<string, unknown> = {}) {
     render(
       <Link href="/invoices/abc" {...props}>
@@ -152,28 +169,34 @@ describe('Link', () => {
   ])('ignores a %s click', (_label, init) => {
     const anchor = renderLink()
     const push = vi.spyOn(window.history, 'pushState')
+    const defaultPrevented = trackClickDefault()
 
     fireEvent.click(anchor, init)
 
     expect(push).not.toHaveBeenCalled()
+    expect(defaultPrevented()).toBe(false)
   })
 
   it('ignores a target other than _self', () => {
     const anchor = renderLink({ target: '_blank' })
     const push = vi.spyOn(window.history, 'pushState')
+    const defaultPrevented = trackClickDefault()
 
     fireEvent.click(anchor)
 
     expect(push).not.toHaveBeenCalled()
+    expect(defaultPrevented()).toBe(false)
   })
 
   it('ignores a download link', () => {
     const anchor = renderLink({ download: '' })
     const push = vi.spyOn(window.history, 'pushState')
+    const defaultPrevented = trackClickDefault()
 
     fireEvent.click(anchor)
 
     expect(push).not.toHaveBeenCalled()
+    expect(defaultPrevented()).toBe(false)
   })
 
   it('ignores a click whose default is already prevented', () => {
@@ -193,9 +216,11 @@ describe('Link', () => {
     )
     const anchor = screen.getByText('Open invoice')
     const push = vi.spyOn(window.history, 'pushState')
+    const defaultPrevented = trackClickDefault()
 
     fireEvent.click(anchor)
 
     expect(push).not.toHaveBeenCalled()
+    expect(defaultPrevented()).toBe(false)
   })
 })
