@@ -246,6 +246,58 @@ describe('invoice list', () => {
     await waitFor(() => expect(within(row('inv-015')).getByText('Sent')).toBeInTheDocument())
   })
 
+  it('disables Duplicate while the duplicate is in flight', async () => {
+    store(seedInvoices)
+    storeProfile()
+    let release: () => void = () => {}
+    const pending = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    installLocks(async (_n, _o, callback) => {
+      await pending
+      return callback()
+    })
+    const user = userEvent.setup()
+    render(<App />)
+    await settleProfile('RS')
+
+    let menu = await openMenu(user, 'inv-015')
+    await user.click(within(menu).getByRole('menuitem', { name: 'Duplicate' }))
+
+    menu = await openMenu(user, 'inv-015')
+    expect(within(menu).getByRole('menuitem', { name: 'Duplicate' })).toHaveAttribute(
+      'data-disabled',
+    )
+
+    release()
+    await waitFor(() => expect(window.location.pathname).toMatch(/^\/invoices\/.+\/edit$/))
+  })
+
+  it('disables Delete while the delete is in flight', async () => {
+    store(seedInvoices)
+    let release: () => void = () => {}
+    const pending = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    installLocks(async (_n, _o, callback) => {
+      await pending
+      return callback()
+    })
+    const user = userEvent.setup()
+    render(<App />)
+    await screen.findByText('5 invoices')
+
+    const menu = await openMenu(user, 'inv-015')
+    await user.click(within(menu).getByRole('menuitem', { name: 'Delete' }))
+    const dialog = await screen.findByRole('alertdialog')
+    await user.click(within(dialog).getByRole('button', { name: 'Delete' }))
+
+    expect(within(dialog).getByRole('button', { name: 'Delete' })).toBeDisabled()
+
+    release()
+    await waitFor(() => expect(screen.queryByTestId('row-inv-015')).not.toBeInTheDocument())
+  })
+
   it('keeps the old status and shows an error when the status write fails', async () => {
     store(seedInvoices)
     installLocks(async () => {
