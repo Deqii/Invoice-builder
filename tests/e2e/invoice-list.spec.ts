@@ -135,6 +135,24 @@ test('walks the history list, preview, back, forward', async ({ page }, testInfo
   await expect(page.getByTestId('route-preview')).toBeVisible()
 })
 
+test('keeps the list when the menu padding or separator is clicked', async ({ page }, testInfo) => {
+  const mobile = testInfo.project.name === 'mobile'
+  await open(page)
+
+  await row(page, mobile, 'inv-014').getByRole('button', { name: 'Actions for INV-2026-014' }).click()
+  const menu = page.getByRole('menu')
+  await expect(menu).toBeVisible()
+
+  const box = await menu.boundingBox()
+  if (!box) throw new Error('menu has no bounding box')
+  await page.mouse.click(box.x + 2, box.y + 2)
+  await expect(page).toHaveURL(/\/$/)
+  await expect(menu).toBeVisible()
+
+  await menu.getByRole('separator').click()
+  await expect(page).toHaveURL(/\/$/)
+})
+
 test('renders the not-found screen with a back link', async ({ page }) => {
   await seed(page)
   await freezeClock(page)

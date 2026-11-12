@@ -61,7 +61,11 @@ function row(id: string) {
 }
 
 async function openMenu(user: ReturnType<typeof userEvent.setup>, id: string) {
-  const actionButton = within(row(id)).getByRole('button', { name: /^Actions for / })
+  return openMenuIn(user, row(id))
+}
+
+async function openMenuIn(user: ReturnType<typeof userEvent.setup>, container: HTMLElement) {
+  const actionButton = within(container).getByRole('button', { name: /^Actions for / })
   await user.click(actionButton)
   return screen.findByRole('menu')
 }
@@ -182,6 +186,23 @@ describe('invoice list', () => {
 
     await user.click(within(row('inv-014')).getByRole('button', { name: 'Actions for INV-2026-014' }))
 
+    expect(window.location.pathname).toBe('/')
+  })
+
+  it.each([
+    ['table row', () => row('inv-014')],
+    ['card', () => within(cards()).getByTestId('card-inv-014')],
+  ])('keeps the list when the %s menu padding or separator is clicked', async (_label, getContainer) => {
+    store(seedInvoices)
+    const user = userEvent.setup()
+    render(<App />)
+    await screen.findByText('5 invoices')
+
+    const menu = await openMenuIn(user, getContainer())
+    fireEvent.click(menu)
+    expect(window.location.pathname).toBe('/')
+
+    fireEvent.click(within(menu).getByRole('separator'))
     expect(window.location.pathname).toBe('/')
   })
 
