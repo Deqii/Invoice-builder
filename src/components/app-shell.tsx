@@ -33,12 +33,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       value={{ profile, openProfile: () => setAvatarOpen(true), runWithProfile: gate.run }}
     >
       <div className="min-h-screen bg-page text-ink">
-        <header className="flex h-16 items-center justify-between border-b border-line bg-paper px-4 sm:grid sm:grid-cols-3 sm:px-8">
+        <header className="flex h-16 items-center justify-between border-b border-line bg-paper px-4 sm:px-8">
           <div className="flex items-center gap-2">
             <span className="grid size-7 place-items-center rounded-md bg-brand text-body-strong font-bold text-on-brand">
               I
             </span>
-            <span className="text-app-name whitespace-nowrap">Invoice Builder</span>
+            <span className="text-app-name">Invoice Builder</span>
           </div>
 
           <nav aria-label="Main" className="hidden justify-center gap-1 sm:flex">
