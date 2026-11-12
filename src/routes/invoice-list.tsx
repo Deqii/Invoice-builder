@@ -73,6 +73,7 @@ export function InvoiceList() {
   }
 
   function openPreviewFromEvent(event: MouseEvent, invoice: Invoice) {
+    if (!(event.currentTarget as HTMLElement).contains(event.target as Node)) return
     const target = event.target as HTMLElement
     if (target.closest('a, button, [role="menuitem"]')) return
     const selection = window.getSelection?.()?.toString()
