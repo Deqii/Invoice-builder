@@ -43,7 +43,7 @@ export function InvoiceActionsMenu({
           variant="ghost"
           size="icon"
           aria-label={`Actions for ${invoice.number ?? 'invoice'}`}
-          className="text-ink-muted"
+          className="rounded-md text-ink-muted"
         >
           <MoreHorizontal />
         </Button>

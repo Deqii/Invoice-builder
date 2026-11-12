@@ -209,13 +209,13 @@ export function InvoiceList() {
               </colgroup>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-ink-faint">Invoice</TableHead>
-                  <TableHead className="text-ink-faint">Client</TableHead>
-                  <TableHead className="text-ink-faint">Issued</TableHead>
-                  <TableHead className="text-ink-faint">Due</TableHead>
-                  <TableHead className="text-ink-faint">Status</TableHead>
-                  <TableHead className="text-right text-ink-faint">Amount</TableHead>
-                  <TableHead />
+                  <TableHead className="border-b border-line-strong text-ink-faint">Invoice</TableHead>
+                  <TableHead className="border-b border-line-strong text-ink-faint">Client</TableHead>
+                  <TableHead className="border-b border-line-strong text-ink-faint">Issued</TableHead>
+                  <TableHead className="border-b border-line-strong text-ink-faint">Due</TableHead>
+                  <TableHead className="border-b border-line-strong text-ink-faint">Status</TableHead>
+                  <TableHead className="border-b border-line-strong text-right text-ink-faint">Amount</TableHead>
+                  <TableHead className="border-b border-line-strong text-ink-faint" />
                 </TableRow>
               </TableHeader>
               <TableBody>

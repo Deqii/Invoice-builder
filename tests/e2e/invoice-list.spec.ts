@@ -135,6 +135,18 @@ test('walks the history list, preview, back, forward', async ({ page }, testInfo
   await expect(page.getByTestId('route-preview')).toBeVisible()
 })
 
+test('draws the line-strong rule under the table header', async ({ page }) => {
+  await open(page)
+
+  const headerCell = page.locator('[data-testid="invoice-table"] thead th').first()
+  const border = await headerCell.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return { width: style.borderBottomWidth, color: style.borderBottomColor }
+  })
+
+  expect(border).toEqual({ width: '1px', color: 'rgb(203, 213, 225)' })
+})
+
 test('keeps the list when the menu padding or separator is clicked', async ({ page }, testInfo) => {
   const mobile = testInfo.project.name === 'mobile'
   await open(page)
