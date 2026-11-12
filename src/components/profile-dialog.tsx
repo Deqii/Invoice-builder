@@ -62,7 +62,7 @@ export function ProfileDialog({
           }
         }}
       >
-        <DialogHeader className="gap-0 text-left">
+        <DialogHeader className="gap-0 pr-10 text-left">
           <DialogTitle>Seller profile</DialogTitle>
           <DialogDescription>
             Shown on every invoice. Saved in this browser only.
