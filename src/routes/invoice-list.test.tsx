@@ -467,6 +467,21 @@ describe('invoice list', () => {
     expect(screen.getByText('4 invoices')).toBeInTheDocument()
   })
 
+  it('uses a readable fallback in the delete dialog when the number is null', async () => {
+    store([makeInvoice({ id: 'inv-null', number: null })])
+    const user = userEvent.setup()
+    render(<App />)
+    await screen.findByText('1 invoice')
+
+    const menu = await openMenu(user, 'inv-null')
+    await user.click(within(menu).getByRole('menuitem', { name: 'Delete' }))
+    const dialog = await screen.findByRole('alertdialog')
+
+    expect(
+      within(dialog).getByText('This invoice will be permanently deleted. This cannot be undone.'),
+    ).toBeInTheDocument()
+  })
+
   it('keeps the invoice and shows an error when delete fails', async () => {
     store(seedInvoices)
     installLocks(async () => {

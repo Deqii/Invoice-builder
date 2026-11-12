@@ -299,7 +299,7 @@ export function InvoiceList() {
 
       <DeleteInvoiceDialog
         open={deleteTarget !== null}
-        invoiceNumber={deleteTarget?.number ?? ''}
+        invoiceNumber={deleteTarget?.number ?? 'This invoice'}
         busy={deleteTarget ? busy[deleteTarget.id] === 'delete' : false}
         onOpenChange={(open) => {
           if (!open) setDeleteTarget(null)
