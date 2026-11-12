@@ -34,8 +34,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     >
       <div className="min-h-screen bg-page text-ink">
         <header className="flex h-16 items-center justify-between border-b border-line bg-paper px-4 sm:px-8">
-          <div className="flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-md bg-brand text-body-strong font-bold text-on-brand">
+          <div className="flex items-center gap-2.5">
+            <span className="grid size-7 place-items-center rounded-md bg-brand text-body-strong leading-6 font-bold text-on-brand">
               I
             </span>
             <span className="text-app-name">Invoice Builder</span>
@@ -45,10 +45,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span aria-current="page" className="rounded-md bg-page px-3 py-2 text-body-medium text-ink">
               Invoices
             </span>
-            <span aria-disabled="true" className="px-3 py-2 text-body-medium text-ink-muted">
+            <span aria-disabled="true" className="rounded-md px-3 py-2 text-body-medium text-ink-muted">
               Clients
             </span>
-            <span aria-disabled="true" className="px-3 py-2 text-body-medium text-ink-muted">
+            <span aria-disabled="true" className="rounded-md px-3 py-2 text-body-medium text-ink-muted">
               Settings
             </span>
           </nav>
