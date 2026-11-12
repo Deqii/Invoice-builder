@@ -54,7 +54,7 @@ export function ProfileDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="gap-0 p-6 max-sm:p-5"
+        className="gap-0 p-6 text-body max-sm:p-5"
         onCloseAutoFocus={(event) => {
           if (trigger.current) {
             event.preventDefault()
@@ -62,7 +62,7 @@ export function ProfileDialog({
           }
         }}
       >
-        <DialogHeader className="text-left">
+        <DialogHeader className="gap-0 text-left">
           <DialogTitle>Seller profile</DialogTitle>
           <DialogDescription>
             Shown on every invoice. Saved in this browser only.
@@ -139,7 +139,7 @@ function ProfileForm({
           control={form.control}
           name="businessName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="gap-1.5">
               <FormLabel>Business name</FormLabel>
               <FormControl>
                 <Input {...field} />
@@ -153,7 +153,7 @@ function ProfileForm({
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="gap-1.5">
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input {...field} />
@@ -167,10 +167,10 @@ function ProfileForm({
           control={form.control}
           name="address"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="gap-1.5">
               <FormLabel>Address</FormLabel>
               <FormControl>
-                <Textarea rows={3} {...field} />
+                <Textarea rows={3} className="field-sizing-fixed" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -185,10 +185,10 @@ function ProfileForm({
         </div>
 
         <DialogFooter className="mt-2">
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="outline" className="h-[38px] px-3.5" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit">Save profile</Button>
+          <Button type="submit" className="h-[38px] px-3.5">Save profile</Button>
         </DialogFooter>
       </form>
     </Form>
