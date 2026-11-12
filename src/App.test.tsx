@@ -15,6 +15,16 @@ describe('App', () => {
     expect(screen.getByText('Invoice Builder')).toBeInTheDocument()
   })
 
+  it('renders the inert nav items as disabled text', () => {
+    render(<App />)
+    for (const label of ['Clients', 'Settings']) {
+      const item = screen.getByText(label)
+      expect(item).toHaveAttribute('aria-disabled', 'true')
+      expect(item.closest('a, button')).toBeNull()
+      expect(item).not.toHaveAttribute('tabindex')
+    }
+  })
+
   it('opens the profile dialog from the avatar and updates it after save', async () => {
     localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(sellerProfile))
     const user = userEvent.setup()

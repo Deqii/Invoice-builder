@@ -1,7 +1,8 @@
 import { AppShell } from '@/components/app-shell'
 import { InvoiceList } from '@/routes/invoice-list'
 import { NotFound } from '@/routes/not-found'
-import { Link, matchRoute, usePathname, type Route } from '@/lib/router'
+import { Link } from '@/components/link'
+import { matchRoute, usePathname, type Route } from '@/lib/router'
 
 function RoutePlaceholder({
   title,

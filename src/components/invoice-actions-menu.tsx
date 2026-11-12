@@ -49,23 +49,23 @@ export function InvoiceActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem className="px-2.5 py-2" onSelect={onEdit}>Edit</DropdownMenuItem>
-        <DropdownMenuItem className="px-2.5 py-2" disabled={disabled || busy === 'duplicate'} onSelect={onDuplicate}>
+        <DropdownMenuItem className="px-2.5 py-2 text-body" onSelect={onEdit}>Edit</DropdownMenuItem>
+        <DropdownMenuItem className="px-2.5 py-2 text-body" disabled={disabled || busy === 'duplicate'} onSelect={onDuplicate}>
           Duplicate
         </DropdownMenuItem>
         {statusAction === 'sent' ? (
-          <DropdownMenuItem className="px-2.5 py-2" disabled={disabled || busy === 'status'} onSelect={() => onStatus('sent')}>
+          <DropdownMenuItem className="px-2.5 py-2 text-body" disabled={disabled || busy === 'status'} onSelect={() => onStatus('sent')}>
             Mark as sent
           </DropdownMenuItem>
         ) : null}
         {statusAction === 'paid' ? (
-          <DropdownMenuItem className="px-2.5 py-2" disabled={disabled || busy === 'status'} onSelect={() => onStatus('paid')}>
+          <DropdownMenuItem className="px-2.5 py-2 text-body" disabled={disabled || busy === 'status'} onSelect={() => onStatus('paid')}>
             Mark as paid
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="px-2.5 py-2"
+          className="px-2.5 py-2 text-body"
           variant="destructive"
           disabled={disabled || busy === 'delete'}
           onSelect={onDelete}

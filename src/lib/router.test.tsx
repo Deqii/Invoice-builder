@@ -1,7 +1,8 @@
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import { createEvent, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { goBack, Link, matchRoute, navigate, usePathname } from './router'
+import { Link } from '@/components/link'
+import { goBack, matchRoute, navigate, usePathname } from './router'
 
 function resetTo(path: string) {
   window.history.replaceState({ __routerIndex: 0 }, '', path)

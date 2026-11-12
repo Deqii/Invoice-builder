@@ -185,10 +185,10 @@ function ProfileForm({
         </div>
 
         <DialogFooter className="mt-2">
-          <Button type="button" variant="outline" className="h-[38px] px-3.5" onClick={onClose}>
+          <Button type="button" variant="outline" className="h-9.5 px-3.5" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" className="h-[38px] px-3.5">Save profile</Button>
+          <Button type="submit" className="h-9.5 px-3.5">Save profile</Button>
         </DialogFooter>
       </form>
     </Form>

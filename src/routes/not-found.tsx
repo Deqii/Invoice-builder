@@ -1,4 +1,4 @@
-import { Link } from '@/lib/router'
+import { Link } from '@/components/link'
 
 export function NotFound() {
   return (

@@ -1,6 +1,6 @@
 import { useRef, useState, type MouseEvent } from 'react'
 import { Plus } from 'lucide-react'
-import { useAppShell } from '@/components/app-shell'
+import { useAppShell } from '@/components/app-shell-context'
 import { DeleteInvoiceDialog } from '@/components/delete-invoice-dialog'
 import { InvoiceActionsMenu } from '@/components/invoice-actions-menu'
 import { StatusBadge } from '@/components/status-badge'
@@ -18,7 +18,8 @@ import { formatDate, todayISO } from '@/lib/dates'
 import { buildDuplicate, clientName, invoiceTotalMinor } from '@/lib/invoice'
 import { formatUsd } from '@/lib/money'
 import { sortInvoicesNewestFirst } from '@/lib/numbering'
-import { Link, navigate } from '@/lib/router'
+import { Link } from '@/components/link'
+import { navigate } from '@/lib/router'
 import { displayStatus } from '@/lib/status'
 import {
   createInvoice,
@@ -162,7 +163,7 @@ export function InvoiceList() {
           onClick={openNewInvoice}
           disabled={corrupt}
           title={corrupt ? CORRUPT_MESSAGE : undefined}
-          className="h-[38px] w-full px-3.5 has-[>svg]:px-3.5 sm:w-auto"
+          className="h-9.5 w-full gap-1.5 px-3.5 has-[>svg]:px-3.5 sm:w-auto"
         >
           <Plus />
           New invoice
@@ -185,7 +186,7 @@ export function InvoiceList() {
         <Card className="items-center gap-2 px-6 py-12 text-center">
           <h2 className="text-dialog-title text-ink">No invoices yet</h2>
           <p className="text-body text-ink-muted">Create your first invoice to get paid.</p>
-          <Button type="button" className="mt-4 h-[38px] px-3.5 has-[>svg]:px-3.5" onClick={openNewInvoice}>
+          <Button type="button" className="mt-4 h-9.5 gap-1.5 px-3.5 has-[>svg]:px-3.5" onClick={openNewInvoice}>
             <Plus />
             Create your first invoice
           </Button>
@@ -199,8 +200,8 @@ export function InvoiceList() {
               <colgroup>
                 <col className="w-36" />
                 <col />
-                <col className="w-[132px]" />
-                <col className="w-[132px]" />
+                <col className="w-33" />
+                <col className="w-33" />
                 <col className="w-28" />
                 <col className="w-32" />
                 <col className="w-14" />
@@ -237,10 +238,10 @@ export function InvoiceList() {
                       <TableCell className="max-w-0">
                         <span className="block truncate">{clientName(invoice.billedTo)}</span>
                       </TableCell>
-                      <TableCell className="text-meta text-ink-muted tabular-nums">
+                      <TableCell className="text-body text-ink-muted tabular-nums">
                         {formatDate(invoice.issuedDate)}
                       </TableCell>
-                      <TableCell className="text-meta text-ink-muted tabular-nums">
+                      <TableCell className="text-body text-ink-muted tabular-nums">
                         {formatDate(invoice.dueDate)}
                       </TableCell>
                       <TableCell>
@@ -281,7 +282,7 @@ export function InvoiceList() {
                   </div>
                   <p className="mt-1 text-body">{clientName(invoice.billedTo)}</p>
                   <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
-                    <span className="text-meta text-ink-muted tabular-nums">
+                    <span className="text-body text-ink-muted tabular-nums">
                       Due {formatDate(invoice.dueDate)}
                     </span>
                     <span className="text-card-amount tabular-nums">
