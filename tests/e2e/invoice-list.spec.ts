@@ -158,6 +158,32 @@ test('highlights the focused menu item with the page background', async ({ page 
   await expect(item).toHaveCSS('background-color', 'rgb(245, 245, 244)')
 })
 
+test('places the open menu at the mockup offsets from the trigger', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'desktop only')
+  await open(page)
+
+  const trigger = row(page, false, 'inv-014').locator('button')
+  await trigger.click()
+  const menu = page.getByRole('menu')
+  await expect(menu).toBeVisible()
+  await page.waitForTimeout(500)
+
+  const triggerBox = await trigger.evaluate((element) => {
+    const rect = element.getBoundingClientRect()
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+  })
+  const menuBox = await menu.evaluate((element) => {
+    const rect = element.getBoundingClientRect()
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+  })
+
+  expect(triggerBox.x + triggerBox.width - (menuBox.x + menuBox.width)).toBeCloseTo(-4, 0)
+  expect(menuBox.y - (triggerBox.y + triggerBox.height)).toBeCloseTo(-4, 0)
+
+  await page.mouse.click(triggerBox.x + triggerBox.width / 2, triggerBox.y + triggerBox.height / 2)
+  await expect(menu).toHaveCount(0)
+})
+
 test('keeps the list when the menu padding or separator is clicked', async ({ page }, testInfo) => {
   const mobile = testInfo.project.name === 'mobile'
   await open(page)

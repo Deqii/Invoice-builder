@@ -48,7 +48,7 @@ export function InvoiceActionsMenu({
           <MoreHorizontal />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" sideOffset={-4} alignOffset={-4}>
         <DropdownMenuItem className="px-2.5 py-2 text-body focus:bg-page" onSelect={onEdit}>Edit</DropdownMenuItem>
         <DropdownMenuItem className="px-2.5 py-2 text-body focus:bg-page" disabled={disabled || busy === 'duplicate'} onSelect={onDuplicate}>
           Duplicate
