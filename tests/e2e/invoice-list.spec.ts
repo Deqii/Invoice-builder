@@ -147,6 +147,17 @@ test('draws the line-strong rule under the table header', async ({ page }) => {
   expect(border).toEqual({ width: '1px', color: 'rgb(203, 213, 225)' })
 })
 
+test('highlights the focused menu item with the page background', async ({ page }, testInfo) => {
+  const mobile = testInfo.project.name === 'mobile'
+  await open(page)
+
+  await row(page, mobile, 'inv-014').getByRole('button', { name: 'Actions for INV-2026-014' }).click()
+  const item = page.getByRole('menuitem', { name: 'Mark as paid' })
+  await item.focus()
+
+  await expect(item).toHaveCSS('background-color', 'rgb(245, 245, 244)')
+})
+
 test('keeps the list when the menu padding or separator is clicked', async ({ page }, testInfo) => {
   const mobile = testInfo.project.name === 'mobile'
   await open(page)
