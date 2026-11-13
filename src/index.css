@@ -164,6 +164,8 @@
     background: var(--color-page);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
     -webkit-font-smoothing: antialiased;
   }
 
