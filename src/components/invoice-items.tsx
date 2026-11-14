@@ -152,6 +152,8 @@ export function InvoiceItems({ items, errors, onChange, onRemove, onAdd }: Invoi
         type="button"
         variant="outline"
         size="sm"
+        aria-invalid={errors.items ? true : undefined}
+        aria-describedby={errors.items ? 'items-error' : undefined}
         onClick={onAdd}
         className="mt-3 h-8 gap-1.5 rounded-lg px-3"
       >
