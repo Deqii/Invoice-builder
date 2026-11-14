@@ -195,6 +195,61 @@ describe('items', () => {
     expect(screen.getByRole('button', { name: 'Add item' })).toHaveFocus()
     expect(invoiceKeys()).toHaveLength(0)
   })
+
+  it('normalizes a leading dot typed into quantity and computes from it', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    await user.type(screen.getByLabelText('Item 1 description'), 'Work')
+    await user.type(screen.getByLabelText('Item 1 rate'), '100')
+    await user.type(screen.getByLabelText('Item 1 quantity'), '.5')
+
+    expect(screen.getByLabelText('Item 1 quantity')).toHaveValue('0.5')
+    expect(within(totals()).getAllByText('$50.00')).toHaveLength(2)
+  })
+
+  it('normalizes a leading dot typed into rate', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    await user.type(screen.getByLabelText('Item 1 rate'), '.99')
+    expect(screen.getByLabelText('Item 1 rate')).toHaveValue('0.99')
+  })
+
+  it('does not rewrite a negative leading dot and rejects it on save', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+    await fillValidNewInvoice(user)
+
+    const qty = screen.getByLabelText('Item 1 quantity')
+    await user.clear(qty)
+    await user.type(qty, '-.5')
+    expect(qty).toHaveValue('-.5')
+
+    await user.click(screen.getByRole('button', { name: 'Save invoice' }))
+    expect(screen.getByText('Enter a quantity greater than 0.')).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/invoices/new')
+    expect(invoiceKeys()).toHaveLength(0)
+  })
+
+  it('leaves a trailing dot alone', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    await user.type(screen.getByLabelText('Item 1 quantity'), '5.')
+    expect(screen.getByLabelText('Item 1 quantity')).toHaveValue('5.')
+  })
+
+  it('turns a lone dot into zero then appends the next digit', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    const qty = screen.getByLabelText('Item 1 quantity')
+    await user.type(qty, '.')
+    expect(qty).toHaveValue('0.')
+    await user.type(qty, '5')
+    expect(qty).toHaveValue('0.5')
+  })
 })
 
 describe('validation on save', () => {
