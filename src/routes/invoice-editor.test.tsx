@@ -520,6 +520,33 @@ describe('saving', () => {
     await waitFor(() => expect(window.location.pathname).toMatch(/^\/invoices\/[^/]+$/))
   })
 
+  it('ignores a second submit while the first write is in flight', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+    await fillValidNewInvoice(user)
+
+    let requests = 0
+    let release: () => void = () => {}
+    const pending = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    installLocks(async (_n, _o, callback) => {
+      requests += 1
+      await pending
+      return callback()
+    })
+
+    const form = document.getElementById('invoice-form') as HTMLFormElement
+    fireEvent.submit(form)
+    fireEvent.submit(form)
+
+    expect(requests).toBe(1)
+
+    release()
+    await waitFor(() => expect(window.location.pathname).toMatch(/^\/invoices\/[^/]+$/))
+    expect(requests).toBe(1)
+  })
+
   it('calls create once when Save is clicked twice while the write is in flight', async () => {
     const user = userEvent.setup()
     await openNew(user)
