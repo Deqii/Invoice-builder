@@ -126,6 +126,12 @@ export function InvoiceEditor({ id }: { id?: string }) {
 
   function addItem() {
     setValues((current) => ({ ...current, items: [...current.items, emptyItem()] }))
+    setErrors((current) => {
+      if (!('items' in current)) return current
+      const next = { ...current }
+      delete next.items
+      return next
+    })
   }
 
   function removeItem(itemId: string) {
