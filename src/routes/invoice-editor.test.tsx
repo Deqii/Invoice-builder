@@ -161,6 +161,38 @@ describe('live totals', () => {
     expect(within(totals()).getByText('$2,673.00')).toBeInTheDocument()
   })
 
+  it('treats an out-of-bounds item as zero everywhere and reports it on save', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    await user.type(screen.getByLabelText('Client'), 'Acme')
+    await user.type(screen.getByLabelText('Item 1 description'), 'Work')
+    await user.type(screen.getByLabelText('Item 1 quantity'), '99999999')
+    await user.type(screen.getByLabelText('Item 1 rate'), '999999999')
+
+    const row = screen.getByLabelText('Item 1 quantity').closest('.relative') as HTMLElement
+    expect((row.querySelector('.text-body-medium') as HTMLElement).textContent).toBe('')
+    expect(within(totals()).getByText('-$0.00')).toBeInTheDocument()
+    expect(within(totals()).getAllByText('$0.00')).toHaveLength(3)
+
+    await user.click(screen.getByRole('button', { name: 'Save invoice' }))
+    expect(screen.getByText('Enter a quantity greater than 0.')).toBeInTheDocument()
+    expect(screen.getByText('Enter a valid rate.')).toBeInTheDocument()
+  })
+
+  it('accepts ten characters in rate and blocks an eleventh', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    const rate = screen.getByLabelText('Item 1 rate')
+    await user.type(rate, '999,999.99')
+    expect(rate).toHaveValue('999,999.99')
+
+    await user.clear(rate)
+    await user.type(rate, '12345678901')
+    expect((rate as HTMLInputElement).value).toHaveLength(10)
+  })
+
   it('never shows NaN for partial or invalid input and treats invalid percentages as zero', async () => {
     const user = userEvent.setup()
     await openEdit(user, 'inv-014')
@@ -399,6 +431,34 @@ describe('saving', () => {
     expect(saved.number).toBe('INV-2026-020')
     expect(saved.status).toBe('sent')
     expect(saved.createdAt).toBe('2026-10-01T08:00:00.000Z')
+  })
+
+  it('round-trips a grouped rate above nine characters without changing it', async () => {
+    const user = userEvent.setup()
+    const invoice: Invoice = {
+      id: 'big-rate',
+      number: 'INV-2026-021',
+      status: 'sent',
+      issuedDate: '2026-10-01',
+      dueDate: '2026-10-15',
+      billedTo: 'Acme',
+      paymentMethod: 'Bank transfer',
+      items: [
+        { id: 'big-rate-item', description: 'Retainer', qtyHundredths: 100, rateMinor: 12345678 },
+      ],
+      discountPercent: 0,
+      taxPercent: 0,
+      notes: '',
+      createdAt: '2026-10-01T08:00:00.000Z',
+      updatedAt: '2026-10-01T08:00:00.000Z',
+    }
+    await openEdit(user, 'big-rate', { invoices: [invoice] })
+
+    expect(screen.getByLabelText('Item 1 rate')).toHaveValue('123,456.78')
+
+    await user.click(screen.getByRole('button', { name: 'Save invoice' }))
+    await waitFor(() => expect(window.location.pathname).toBe('/invoices/big-rate'))
+    expect(storedInvoice('big-rate').items[0].rateMinor).toBe(12345678)
   })
 
   it('calls create once when Save is clicked twice while the write is in flight', async () => {
