@@ -106,19 +106,26 @@ test('reloads every deep link on the correct route screen', async ({ page }) => 
   await expect(page).toHaveURL(/\/invoices\/inv-014$/)
 
   await page.goto('/invoices/inv-014/edit')
-  await expect(page.getByTestId('route-edit')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /Edit invoice/ })).toBeVisible()
+  await expect(page.getByLabel('Invoice no.')).toHaveValue('INV-2026-014')
   await page.reload()
-  await expect(page.getByTestId('route-edit')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /Edit invoice/ })).toBeVisible()
+  await expect(page.getByLabel('Invoice no.')).toHaveValue('INV-2026-014')
 
   await page.goto('/invoices/new')
-  await expect(page.getByTestId('route-new')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /New invoice/ })).toBeVisible()
+  await expect(page.getByText('Draft', { exact: true })).toBeVisible()
   await page.reload()
-  await expect(page.getByTestId('route-new')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /New invoice/ })).toBeVisible()
+  await expect(page.getByText('Draft', { exact: true })).toBeVisible()
 
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Invoices' })).toBeVisible()
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Invoices' })).toBeVisible()
+
+  await page.goto('/nope')
+  await expect(page.getByTestId('route-not-found')).toBeVisible()
 })
 
 test('walks the history list, preview, back, forward', async ({ page }, testInfo) => {

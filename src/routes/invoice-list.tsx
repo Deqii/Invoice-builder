@@ -21,31 +21,11 @@ import { sortInvoicesNewestFirst } from '@/lib/numbering'
 import { Link } from '@/components/link'
 import { navigate } from '@/lib/router'
 import { displayStatus } from '@/lib/status'
-import {
-  createInvoice,
-  deleteInvoice,
-  scanInvoices,
-  setInvoiceStatus,
-  StorageFailure,
-} from '@/lib/storage'
+import { createInvoice, deleteInvoice, scanInvoices, setInvoiceStatus } from '@/lib/storage'
+import { CORRUPT_MESSAGE, storageError } from '@/lib/storage-errors'
 import type { Invoice, StoredStatus } from '@/lib/types'
 
 type BusyAction = 'status' | 'duplicate' | 'delete'
-
-const SAVE_ERROR = 'Could not save to this browser. Your changes are still here. Please try again.'
-const COLLISION_ERROR = 'Could not assign a unique invoice number. Please try saving again.'
-const NO_LOCKS_ERROR =
-  'Saving is not available in this browser. Please use a current version of Chrome, Edge, Firefox or Safari.'
-const CORRUPT_MESSAGE =
-  'Some saved invoices could not be read, so they are not shown. Saving is disabled to protect your data.'
-
-function storageError(failure: unknown): string {
-  if (failure instanceof StorageFailure) {
-    if (failure.code === 'no-locks') return NO_LOCKS_ERROR
-    if (failure.code === 'collision') return COLLISION_ERROR
-  }
-  return SAVE_ERROR
-}
 
 export function InvoiceList() {
   const { runWithProfile } = useAppShell()
