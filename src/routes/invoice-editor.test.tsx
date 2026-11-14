@@ -67,7 +67,7 @@ function dueTrigger() {
   return screen.getByRole('button', { name: 'Due date' })
 }
 
-async function openNew(user: ReturnType<typeof userEvent.setup>, profile = sellerProfile) {
+async function openNew(user: ReturnType<typeof userEvent.setup>, profile: StoreOptions['profile'] = sellerProfile) {
   store({ profile })
   route('/invoices/new')
   const view = render(<App />)
