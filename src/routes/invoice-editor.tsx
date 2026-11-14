@@ -195,7 +195,7 @@ export function InvoiceEditor({ id }: { id?: string }) {
   return (
     <main className="mx-auto w-full max-w-editor px-4 pt-5 pb-10 sm:px-6 sm:pt-8 sm:pb-16">
       <div className="mb-6">
-        <Link href="/" className="text-meta text-ink-muted hover:text-ink">
+        <Link href="/" className="inline-block text-meta text-ink-muted hover:text-ink">
           ← Back to invoices
         </Link>
         <h1 className="mt-1 flex items-center gap-3 text-page-title">
@@ -369,7 +369,7 @@ export function InvoiceEditor({ id }: { id?: string }) {
           variant="outline"
           onClick={() => goBack()}
           disabled={saving}
-          className="order-2 h-9 px-3.5 sm:order-1"
+          className="order-2 h-auto px-3.5 sm:order-1"
         >
           Cancel
         </Button>
@@ -377,7 +377,7 @@ export function InvoiceEditor({ id }: { id?: string }) {
           type="submit"
           form="invoice-form"
           disabled={saving || corrupt || !profileComplete}
-          className="order-1 h-9 px-3.5 sm:order-2"
+          className="order-1 h-auto px-3.5 sm:order-2"
         >
           Save invoice
         </Button>

@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { formatUsd, lineAmountMinor } from '@/lib/money'
@@ -138,9 +138,20 @@ export function InvoiceItems({ items, errors, onChange, onRemove, onAdd }: Invoi
                 size="icon"
                 aria-label={`Remove item ${number}`}
                 onClick={() => onRemove(item.id)}
-                className="absolute top-2 right-2 size-9 text-ink-muted sm:static"
+                className="absolute top-2 right-2 size-9 rounded-md text-ink-muted max-sm:top-1 max-sm:right-1.5 max-sm:size-8 sm:static"
               >
-                <Trash2 />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.5 8.5h6l.5-8.5" />
+                </svg>
               </Button>
             </div>
           )
@@ -151,11 +162,11 @@ export function InvoiceItems({ items, errors, onChange, onRemove, onAdd }: Invoi
         id="items"
         type="button"
         variant="outline"
-        size="sm"
+        size="default"
         aria-invalid={errors.items ? true : undefined}
         aria-describedby={errors.items ? 'items-error' : undefined}
         onClick={onAdd}
-        className="mt-3 h-8 gap-1.5 rounded-lg px-3"
+        className="mt-3 h-auto gap-1.5 rounded-lg px-3 py-1.5"
       >
         <Plus />
         Add item

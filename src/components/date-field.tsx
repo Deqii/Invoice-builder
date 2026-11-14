@@ -71,7 +71,7 @@ export function DateField({
             <span className={value === '' ? 'text-ink-faint' : 'text-ink'}>
               {value === '' ? 'Choose a date' : formatDate(value)}
             </span>
-            <CalendarDays className="size-4 text-ink-faint" />
+            <CalendarDays className="-mr-px size-4 text-ink-faint" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
