@@ -179,6 +179,24 @@ test.describe('invoice editor', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
+  test('keeps the editor inside the viewport at 390, 360 and 320', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'mobile only')
+    await seed(page)
+    await freezeClock(page)
+
+    for (const width of [390, 360, 320]) {
+      await page.setViewportSize({ width, height: 844 })
+      for (const path of ['/invoices/new', '/invoices/inv-014/edit']) {
+        await page.goto(path)
+        const { scrollWidth, innerWidth } = await page.evaluate(() => ({
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth: window.innerWidth,
+        }))
+        expect(scrollWidth, `${path} at ${width}px`).toBeLessThanOrEqual(innerWidth)
+      }
+    }
+  })
+
   test('shows a validation alert with the exact client message', async ({ page }) => {
     await seed(page)
     await freezeClock(page)
