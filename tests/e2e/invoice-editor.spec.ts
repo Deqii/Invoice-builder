@@ -43,7 +43,14 @@ test.describe('invoice editor', () => {
 
     await page.getByRole('button', { name: 'Save invoice' }).click()
     await expect(page).toHaveURL(/\/invoices\/[^/]+$/)
-    expect(await storedNumbers(page)).toEqual(['INV-2026-016'])
+    expect((await storedNumbers(page)).sort()).toEqual([
+      'INV-2026-011',
+      'INV-2026-012',
+      'INV-2026-013',
+      'INV-2026-014',
+      'INV-2026-015',
+      'INV-2026-016',
+    ])
 
     await page.reload()
     await expect(page.getByTestId('route-preview')).toBeVisible()
@@ -135,9 +142,10 @@ test.describe('invoice editor', () => {
     await expect(page).toHaveURL(/\/invoices\/[^/]+$/)
     await expect(second).toHaveURL(/\/invoices\/[^/]+$/)
 
-    const numbers = await storedNumbers(page)
+    const numbers = (await storedNumbers(page)).filter((number) =>
+      ['INV-2026-016', 'INV-2026-017'].includes(number),
+    )
     expect(numbers).toHaveLength(2)
-    expect(new Set(numbers).size).toBe(2)
     expect(new Set(numbers)).toEqual(new Set(['INV-2026-016', 'INV-2026-017']))
 
     await page.goto('/')

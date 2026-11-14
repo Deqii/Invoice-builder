@@ -1,5 +1,6 @@
 import { AppShell } from '@/components/app-shell'
 import { InvoiceList } from '@/routes/invoice-list'
+import { InvoiceEditor } from '@/routes/invoice-editor'
 import { NotFound } from '@/routes/not-found'
 import { Link } from '@/components/link'
 import { matchRoute, usePathname, type Route } from '@/lib/router'
@@ -31,21 +32,9 @@ function renderRoute(route: Route) {
     case 'list':
       return <InvoiceList />
     case 'new':
-      return (
-        <RoutePlaceholder
-          title="New invoice"
-          testId="route-new"
-          note="TODO: Task 7 replaces this placeholder with the invoice editor."
-        />
-      )
+      return <InvoiceEditor key="new" />
     case 'edit':
-      return (
-        <RoutePlaceholder
-          title="Edit invoice"
-          testId="route-edit"
-          note="TODO: Task 7 replaces this placeholder with the invoice editor."
-        />
-      )
+      return <InvoiceEditor key={`edit-${route.id}`} id={route.id} />
     case 'preview':
       return (
         <RoutePlaceholder

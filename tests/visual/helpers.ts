@@ -12,7 +12,8 @@ export async function seed(page: Page) {
 }
 
 export async function freezeClock(page: Page) {
-  await page.clock.setFixedTime(new Date(2026, 9, 26, 12, 0, 0))
+  const localNoon = await page.evaluate(() => new Date(2026, 9, 26, 12, 0, 0).getTime())
+  await page.clock.setFixedTime(localNoon)
 }
 
 export function shotPath(testInfo: TestInfo, name: string) {

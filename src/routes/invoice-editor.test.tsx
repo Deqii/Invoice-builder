@@ -181,6 +181,7 @@ describe('items', () => {
     const user = userEvent.setup()
     await openNew(user)
 
+    await user.type(screen.getByLabelText('Client'), 'Acme')
     await user.click(screen.getByRole('button', { name: 'Add item' }))
     expect(screen.getByLabelText('Item 2 description')).toBeInTheDocument()
 
@@ -224,8 +225,10 @@ describe('validation on save', () => {
 
     await user.click(dueTrigger())
     const dialog = await screen.findByRole('dialog')
+    await user.click(within(dialog).getByRole('button', { name: /Previous Month/ }))
     const earlier = within(dialog).getByRole('button', { name: /October 20th, 2026/ })
     fireEvent.click(earlier)
+    await waitFor(() => expect(dueTrigger()).toHaveTextContent('Oct 20, 2026'))
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 
     await user.click(screen.getByRole('button', { name: 'Save invoice' }))
@@ -240,9 +243,8 @@ describe('validation on save', () => {
 
     await user.click(issuedTrigger())
     const dialog = await screen.findByRole('dialog')
-    const selected = dialog.querySelector('button[data-selected-single="true"]')
-    expect(selected).not.toBeNull()
-    fireEvent.click(selected as HTMLElement)
+    const selected = within(dialog).getByRole('button', { name: /, selected$/ })
+    fireEvent.click(selected)
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 
     await user.click(screen.getByRole('button', { name: 'Save invoice' }))
@@ -467,9 +469,8 @@ describe('date field', () => {
 
     await user.click(dueTrigger())
     const dialog = await screen.findByRole('dialog')
-    const selected = dialog.querySelector('button[data-selected-single="true"]')
-    expect(selected).not.toBeNull()
-    fireEvent.click(selected as HTMLElement)
+    const selected = within(dialog).getByRole('button', { name: /, selected$/ })
+    fireEvent.click(selected)
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(dueTrigger()).toHaveTextContent('Nov 9, 2026')
   })
