@@ -142,16 +142,19 @@ test.describe('invoice editor', () => {
     await expect(page).toHaveURL(/\/invoices\/[^/]+$/)
     await expect(second).toHaveURL(/\/invoices\/[^/]+$/)
 
-    const numbers = (await storedNumbers(page)).filter((number) =>
-      ['INV-2026-016', 'INV-2026-017'].includes(number),
-    )
-    expect(numbers).toHaveLength(2)
-    expect(new Set(numbers)).toEqual(new Set(['INV-2026-016', 'INV-2026-017']))
+    expect((await storedNumbers(page)).sort()).toEqual([
+      'INV-2026-011',
+      'INV-2026-012',
+      'INV-2026-013',
+      'INV-2026-014',
+      'INV-2026-015',
+      'INV-2026-016',
+      'INV-2026-017',
+    ])
 
     await page.goto('/')
-    for (const number of numbers) {
-      await expect(page.getByRole('link', { name: number })).toBeVisible()
-    }
+    await expect(page.getByRole('link', { name: 'INV-2026-016' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'INV-2026-017' })).toBeVisible()
   })
 
   test('keeps DOM ids unique and focuses a visible first invalid field', async ({ page }) => {
