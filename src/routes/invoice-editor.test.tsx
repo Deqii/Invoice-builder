@@ -129,6 +129,24 @@ describe('new invoice defaults', () => {
     expect(screen.getByLabelText('Item 1 description')).toHaveValue('')
     expect(screen.getByLabelText('Notes (shown on the invoice)')).toHaveValue('')
   })
+
+  it('uses the local day for defaults at 23:30', async () => {
+    vi.setSystemTime(new Date(2026, 9, 26, 23, 30, 0))
+    const user = userEvent.setup()
+    await openNew(user)
+
+    expect(issuedTrigger()).toHaveTextContent('Oct 26, 2026')
+    expect(dueTrigger()).toHaveTextContent('Nov 9, 2026')
+  })
+
+  it('uses the local day for defaults at 00:30', async () => {
+    vi.setSystemTime(new Date(2026, 9, 26, 0, 30, 0))
+    const user = userEvent.setup()
+    await openNew(user)
+
+    expect(issuedTrigger()).toHaveTextContent('Oct 26, 2026')
+    expect(dueTrigger()).toHaveTextContent('Nov 9, 2026')
+  })
 })
 
 describe('existing invoice', () => {
