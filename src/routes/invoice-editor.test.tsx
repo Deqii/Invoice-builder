@@ -196,6 +196,20 @@ describe('items', () => {
     expect(invoiceKeys()).toHaveLength(0)
   })
 
+  it('clears only the empty-list error when an item is added', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    await user.click(screen.getByRole('button', { name: 'Remove item 1' }))
+    await user.click(screen.getByRole('button', { name: 'Save invoice' }))
+    expect(screen.getByText('Add at least one item.')).toBeInTheDocument()
+    expect(screen.getByText('Enter the client name on the first line.')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Add item' }))
+    expect(screen.queryByText('Add at least one item.')).not.toBeInTheDocument()
+    expect(screen.getByText('Enter the client name on the first line.')).toBeInTheDocument()
+  })
+
   it('normalizes a leading dot typed into quantity and computes from it', async () => {
     const user = userEvent.setup()
     await openNew(user)
