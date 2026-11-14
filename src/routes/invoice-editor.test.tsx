@@ -228,6 +228,22 @@ describe('items', () => {
     expect(invoiceKeys()).toHaveLength(0)
   })
 
+  it('describes the add-item button with the empty-list error while it shows', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+
+    await user.click(screen.getByRole('button', { name: 'Remove item 1' }))
+    await user.click(screen.getByRole('button', { name: 'Save invoice' }))
+
+    const add = screen.getByRole('button', { name: 'Add item' })
+    expect(add).toHaveAttribute('aria-invalid', 'true')
+    expect(add).toHaveAttribute('aria-describedby', 'items-error')
+
+    await user.click(add)
+    expect(add).not.toHaveAttribute('aria-invalid')
+    expect(add).not.toHaveAttribute('aria-describedby')
+  })
+
   it('clears only the empty-list error when an item is added', async () => {
     const user = userEvent.setup()
     await openNew(user)
@@ -459,6 +475,31 @@ describe('saving', () => {
     await user.click(screen.getByRole('button', { name: 'Save invoice' }))
     await waitFor(() => expect(window.location.pathname).toBe('/invoices/big-rate'))
     expect(storedInvoice('big-rate').items[0].rateMinor).toBe(12345678)
+  })
+
+  it('disables Save and Cancel while the write is pending', async () => {
+    const user = userEvent.setup()
+    await openNew(user)
+    await fillValidNewInvoice(user)
+
+    let release: () => void = () => {}
+    const pending = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    installLocks(async (_n, _o, callback) => {
+      await pending
+      return callback()
+    })
+
+    const save = screen.getByRole('button', { name: 'Save invoice' })
+    const cancel = screen.getByRole('button', { name: 'Cancel' })
+    fireEvent.click(save)
+
+    expect(save).toBeDisabled()
+    expect(cancel).toBeDisabled()
+
+    release()
+    await waitFor(() => expect(window.location.pathname).toMatch(/^\/invoices\/[^/]+$/))
   })
 
   it('calls create once when Save is clicked twice while the write is in flight', async () => {
