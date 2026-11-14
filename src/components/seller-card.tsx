@@ -28,7 +28,7 @@ export function SellerCard() {
       <button
         type="button"
         onClick={openProfile}
-        className="shrink-0 text-body-medium font-medium text-brand max-sm:ml-14 max-sm:basis-full max-sm:text-left"
+        className="shrink-0 text-body-medium font-medium text-brand max-sm:ml-14 max-sm:shrink max-sm:basis-full max-sm:text-left"
       >
         Edit profile
       </button>
