@@ -114,9 +114,12 @@ export function InvoiceEditor({ id }: { id?: string }) {
   }
 
   function updateItem(itemId: string, patch: Partial<Omit<EditorItem, 'id'>>) {
+    const next = { ...patch }
+    if (next.qty !== undefined) next.qty = normalizeDecimalInput(next.qty)
+    if (next.rate !== undefined) next.rate = normalizeDecimalInput(next.rate)
     setValues((current) => ({
       ...current,
-      items: current.items.map((item) => (item.id === itemId ? { ...item, ...patch } : item)),
+      items: current.items.map((item) => (item.id === itemId ? { ...item, ...next } : item)),
     }))
     setErrors({})
   }
