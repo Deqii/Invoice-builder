@@ -20,6 +20,7 @@ import { CORRUPT_MESSAGE, storageError } from '@/lib/storage-errors'
 import { displayStatus } from '@/lib/status'
 import type { Invoice } from '@/lib/types'
 import {
+  countableItem,
   normalizeDecimalInput,
   validateInvoiceForm,
   type InvoiceFormErrors,
@@ -97,10 +98,8 @@ export function InvoiceEditor({ id }: { id?: string }) {
   const badge = invoice ? displayStatus(invoice, today) : 'draft'
 
   const parsedItems = values.items.flatMap((item) => {
-    const qty = parseQtyInput(item.qty)
-    const rate = parseMoneyInput(item.rate)
-    if (qty === null || rate === null) return []
-    return [{ qtyHundredths: qty, rateMinor: rate }]
+    const counted = countableItem(item)
+    return counted ? [counted] : []
   })
   const totals = computeTotals(
     parsedItems,

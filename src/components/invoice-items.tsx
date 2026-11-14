@@ -1,8 +1,8 @@
 import { Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { formatUsd, lineAmountMinor, parseMoneyInput, parseQtyInput } from '@/lib/money'
-import { MAX_QTY_HUNDREDTHS, MAX_RATE_MINOR } from '@/lib/validation'
+import { formatUsd, lineAmountMinor } from '@/lib/money'
+import { countableItem } from '@/lib/validation'
 
 export interface EditorItem {
   id: string
@@ -34,12 +34,8 @@ function fieldError(id: string, error: string | undefined) {
 }
 
 function itemAmount(item: EditorItem): string {
-  const qty = parseQtyInput(item.qty)
-  const rate = parseMoneyInput(item.rate)
-  if (qty === null || rate === null || qty > MAX_QTY_HUNDREDTHS || rate > MAX_RATE_MINOR) {
-    return ''
-  }
-  return formatUsd(lineAmountMinor(qty, rate))
+  const counted = countableItem(item)
+  return counted ? formatUsd(lineAmountMinor(counted.qtyHundredths, counted.rateMinor)) : ''
 }
 
 export function InvoiceItems({ items, errors, onChange, onRemove, onAdd }: InvoiceItemsProps) {
@@ -117,7 +113,7 @@ export function InvoiceItems({ items, errors, onChange, onRemove, onAdd }: Invoi
                       aria-invalid={rateError ? true : undefined}
                       aria-describedby={describedBy(rateId, rateError)}
                       inputMode="decimal"
-                      maxLength={9}
+                      maxLength={10}
                       className="pl-6 text-right tabular-nums"
                       value={item.rate}
                       onChange={(event) => onChange(item.id, { rate: event.target.value })}

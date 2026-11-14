@@ -24,6 +24,18 @@ export function normalizeDecimalInput(value: string): string {
   return value.startsWith('.') ? `0${value}` : value
 }
 
+export function countableItem(item: { qty: string; rate: string }): {
+  qtyHundredths: number
+  rateMinor: number
+} | null {
+  const qty = parseQtyInput(item.qty)
+  const rate = parseMoneyInput(item.rate)
+  if (qty === null || rate === null || qty > MAX_QTY_HUNDREDTHS || rate > MAX_RATE_MINOR) {
+    return null
+  }
+  return { qtyHundredths: qty, rateMinor: rate }
+}
+
 function itemErrorKey(id: string, field: 'description' | 'qty' | 'rate'): string {
   return `item-${id}-${field}`
 }
