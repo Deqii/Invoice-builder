@@ -174,3 +174,19 @@
     outline-offset: 2px;
   }
 }
+
+@page {
+  size: A4 portrait;
+  margin: 48px 0;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background: var(--color-paper);
+  }
+}

@@ -100,9 +100,15 @@ test('reloads every deep link on the correct route screen', async ({ page }) => 
 
   await page.goto('/invoices/inv-014')
   await expect(page.getByTestId('route-preview')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /INV-2026-014/ })).toBeVisible()
+  await expect(page.getByTestId('invoice-paper')).toContainText('Northwind Labs')
+  await expect(page.getByTestId('invoice-paper')).toContainText('Oct 20, 2026')
   await expect(page).toHaveURL(/\/invoices\/inv-014$/)
   await page.reload()
   await expect(page.getByTestId('route-preview')).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /INV-2026-014/ })).toBeVisible()
+  await expect(page.getByTestId('invoice-paper')).toContainText('Northwind Labs')
+  await expect(page.getByTestId('invoice-paper')).toContainText('Oct 20, 2026')
   await expect(page).toHaveURL(/\/invoices\/inv-014$/)
 
   await page.goto('/invoices/inv-014/edit')

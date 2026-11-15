@@ -54,6 +54,8 @@ test.describe('invoice editor', () => {
 
     await page.reload()
     await expect(page.getByTestId('route-preview')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: /INV-2026-016/ })).toBeVisible()
+    await expect(page.getByTestId('invoice-paper')).toContainText('Acme')
 
     await page.goto('/')
     await expect(page.getByRole('link', { name: 'INV-2026-016' })).toBeVisible()
