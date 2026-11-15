@@ -173,9 +173,9 @@ export function InvoicePaper({
       </div>
 
       {invoice.notes.trim() !== '' ? (
-        <section className="mt-10 border-t border-line pt-6">
+        <section className="mt-10 max-w-130 border-t border-line pt-6">
           <h3 className="mb-2 text-label uppercase text-ink-faint">Notes</h3>
-          <p className="max-w-130 whitespace-pre-line text-body text-ink-muted">{invoice.notes}</p>
+          <p className="whitespace-pre-line text-body text-ink-muted">{invoice.notes}</p>
         </section>
       ) : null}
     </article>
