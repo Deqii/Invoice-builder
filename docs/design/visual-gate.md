@@ -70,7 +70,7 @@ These are expected and approved before the first baseline set:
   differs, the look does not.
 - Notes divider width. The approved PNG mockup draws the divider about 520 px
   wide. The mockup HTML source keeps the divider at the full content width
-  (696 px at 1440). The app follows the PNG and the approved spec: 520 px on
+  (696 px at 1440). The app follows the approved PNG: 520 px on
   desktop, full content width on mobile.
 - Focus rings. The app keeps its current autofocus and focus-visible
   behaviour. Baselines with a visible focus ring: `profile`,
