@@ -81,7 +81,6 @@ test.describe('print media', () => {
       borderBottom: '0px',
       borderLeft: '0px',
       radius: '0px',
-      shadow: 'none',
       background: 'rgb(255, 255, 255)',
       paddingTop: '0px',
       paddingBottom: '0px',
@@ -90,6 +89,8 @@ test.describe('print media', () => {
       left: 0,
       width: 794,
     })
+    const shadows = styles.shadow === 'none' ? [] : styles.shadow.split(/,(?![^()]*\))/)
+    expect(shadows.filter((shadow) => !/^rgba\(0, 0, 0, 0\)/.test(shadow.trim()))).toEqual([])
 
     const rowBreak = await page.locator('table tbody tr').first().evaluate((element) => {
       const style = getComputedStyle(element)
@@ -180,6 +181,23 @@ function decodeStream(body: string): string {
   return bytes.toString('latin1')
 }
 
+function compose(outer: number[], inner: number[]): number[] {
+  const [a1, b1, c1, d1, e1, f1] = outer
+  const [a2, b2, c2, d2, e2, f2] = inner
+  return [
+    a1 * a2 + c1 * b2,
+    b1 * a2 + d1 * b2,
+    a1 * c2 + c1 * d2,
+    b1 * c2 + d1 * d2,
+    a1 * e2 + c1 * f2 + e1,
+    b1 * e2 + d1 * f2 + f1,
+  ]
+}
+
+const NUMBER = String.raw`-?(?:\d+(?:\.\d*)?|\.\d+)`
+const CM = new RegExp(`^(${NUMBER}) (${NUMBER}) (${NUMBER}) (${NUMBER}) (${NUMBER}) (${NUMBER}) cm$`)
+const TM = new RegExp(`^(${NUMBER}) (${NUMBER}) (${NUMBER}) (${NUMBER}) (${NUMBER}) (${NUMBER}) Tm$`)
+
 function readPageTextY(buffer: Buffer): PdfTextPage[] {
   const objects = pdfObjects(buffer)
   const refs = pageRefs(objects)
@@ -188,11 +206,32 @@ function readPageTextY(buffer: Buffer): PdfTextPage[] {
     const streams = contentRefs(body)
       .map((contentRef) => decodeStream(objects.get(contentRef) ?? ''))
       .join('\n')
+    let ctm = [1, 0, 0, 1, 0, 0]
+    const stack: number[][] = []
     let maxY = 0
     let count = 0
-    for (const match of streams.matchAll(/([-\d.]+) ([-\d.]+) ([-\d.]+) ([-\d.]+) ([-\d.]+) ([-\d.]+) Tm/g)) {
-      maxY = Math.max(maxY, Number(match[6]))
-      count += 1
+    for (const line of streams.split('\n')) {
+      const operator = line.trim()
+      if (operator === 'q') {
+        stack.push([...ctm])
+        continue
+      }
+      if (operator === 'Q') {
+        ctm = stack.pop() ?? ctm
+        continue
+      }
+      const cm = CM.exec(operator)
+      if (cm) {
+        ctm = compose(ctm, cm.slice(1).map(Number))
+        continue
+      }
+      const tm = TM.exec(operator)
+      if (tm) {
+        const [, , , , e, f] = tm.slice(1).map(Number)
+        const y = ctm[1] * e + ctm[3] * f + ctm[5]
+        maxY = Math.max(maxY, y)
+        count += 1
+      }
     }
     return { maxY, count }
   })
@@ -212,12 +251,12 @@ test.describe('multi page print', () => {
     await expect(page.getByText('Line item 45')).toBeVisible()
 
     const rules = await page.evaluate(() => {
-      const found: Array<{ size: string; margin: string }> = []
+      const found: Array<{ cssText: string; size: string; margin: string }> = []
       function walk(rules: CSSRuleList) {
         for (const rule of Array.from(rules)) {
           if (rule.constructor.name === 'CSSPageRule') {
             const style = (rule as CSSPageRule).style
-            found.push({ size: style.size, margin: style.margin })
+            found.push({ cssText: rule.cssText, size: style.size, margin: style.margin })
           }
           const nested = (rule as CSSMediaRule).cssRules
           if (nested) walk(nested)
@@ -233,8 +272,9 @@ test.describe('multi page print', () => {
       return found
     })
 
-    const pageRule = rules.find((rule) => /A4/.test(rule.size) && /portrait/i.test(rule.size))
+    const pageRule = rules.find((rule) => /a4/i.test(rule.size))
     expect(pageRule, JSON.stringify(rules)).toBeTruthy()
+    expect(pageRule?.cssText).toMatch(/A4/i)
     expect(pageRule?.margin.replace(/\s+/g, ' ').trim()).toMatch(/^48px 0(px)?$/)
 
     const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true })
@@ -246,10 +286,10 @@ test.describe('multi page print', () => {
     expect(pages.length).toBeGreaterThan(1)
     expect(pages[1].count).toBeGreaterThan(0)
 
-    const pageHeight = Number(
-      /\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)\s*\]/.exec(text)?.[2] ?? 0,
-    )
-    expect(pageHeight).toBeGreaterThan(0)
+    const mediaBox = /\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)\s*\]/.exec(text)
+    const pageWidth = Number(mediaBox?.[1] ?? 0)
+    const pageHeight = Number(mediaBox?.[2] ?? 0)
+    expect(pageHeight).toBeGreaterThan(pageWidth)
 
     const marginPoints = 48 * (72 / 96)
     const maxY = pages[1].maxY

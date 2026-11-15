@@ -32,8 +32,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     <AppShellContext.Provider
       value={{ profile, openProfile: () => setAvatarOpen(true), runWithProfile: gate.run }}
     >
-      <div className="min-h-screen bg-page text-ink">
-        <header className="flex h-16 items-center justify-between border-b border-line bg-paper px-4 sm:px-8">
+      <div className="min-h-screen bg-page text-ink print:bg-paper">
+        <header className="flex h-16 items-center justify-between border-b border-line bg-paper px-4 print:hidden sm:px-8">
           <div className="flex items-center gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-brand text-body-strong leading-6 font-bold text-on-brand">
               I
