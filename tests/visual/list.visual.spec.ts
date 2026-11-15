@@ -18,6 +18,9 @@ test('invoice list with the actions menu', async ({ page }, testInfo) => {
   await seed(page)
   await freezeClock(page)
   await page.goto('/')
+  await page.addStyleTag({
+    content: '[data-testid="row-inv-014"]{transition:none!important}',
+  })
   await page
     .getByTestId('invoice-table')
     .getByRole('button', { name: 'Actions for INV-2026-014' })
