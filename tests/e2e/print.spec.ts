@@ -356,3 +356,35 @@ test.describe('preview dates under Pacific/Kiritimati', () => {
     await expect(page.getByText(/Net 14 days/)).toBeVisible()
   })
 })
+
+test.describe('preview layout', () => {
+  test('notes section is 520px on desktop and full content width on mobile', async ({ page }) => {
+    await openPreview(page)
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    const desktop = await page.evaluate(() => {
+      const paper = document.querySelector('[data-testid="invoice-paper"]') as HTMLElement
+      const heading = Array.from(paper.querySelectorAll('h3')).find(
+        (element) => element.textContent?.trim() === 'Notes',
+      ) as HTMLElement
+      const section = heading.parentElement as HTMLElement
+      return { notes: section.getBoundingClientRect().width }
+    })
+    expect(desktop.notes).toBe(520)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    const mobile = await page.evaluate(() => {
+      const paper = document.querySelector('[data-testid="invoice-paper"]') as HTMLElement
+      const heading = Array.from(paper.querySelectorAll('h3')).find(
+        (element) => element.textContent?.trim() === 'Notes',
+      ) as HTMLElement
+      const section = heading.parentElement as HTMLElement
+      const table = paper.querySelector('table') as HTMLElement
+      return {
+        notes: section.getBoundingClientRect().width,
+        table: table.getBoundingClientRect().width,
+      }
+    })
+    expect(mobile.notes).toBe(mobile.table)
+  })
+})
