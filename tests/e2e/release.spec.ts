@@ -98,4 +98,23 @@ test('persists the profile and invoices across reload', async ({ page }) => {
   await page.reload()
   await expect(page.getByRole('link', { name: 'INV-2026-001' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'INV-2026-002' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Actions for INV-2026-002' }).click()
+  await page.getByRole('menuitem', { name: 'Delete' }).click()
+  const confirm = page.getByRole('alertdialog')
+  await expect(confirm).toContainText('INV-2026-002 will be permanently deleted.')
+  await confirm.getByRole('button', { name: 'Delete' }).click()
+  await expect(page.getByRole('link', { name: 'INV-2026-002' })).toHaveCount(0)
+
+  await page.reload()
+  await expect(page.getByRole('link', { name: 'INV-2026-002' })).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'New invoice' }).click()
+  await expect(page).toHaveURL(/\/invoices\/new$/)
+  await fillInvoice(page)
+  await expect(page.getByRole('heading', { level: 1, name: /INV-2026-003/ })).toBeVisible()
+
+  await page.goto('/')
+  await expect(page.getByRole('link', { name: 'INV-2026-003' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'INV-2026-002' })).toHaveCount(0)
 })
